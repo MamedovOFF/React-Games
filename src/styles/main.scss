@@ -1,0 +1,19 @@
+@import "navigation";
+@import "gamePages";
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+#root {
+  min-height: 100vh;
+  background-color: #cfe8fc;
+}
+
+a {
+  text-decoration: none;
+  color: gray;
+  &.active {
+    color: rgb(25, 118, 210);
+  }
+}

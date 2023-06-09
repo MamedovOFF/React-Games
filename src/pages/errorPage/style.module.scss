@@ -1,0 +1,11 @@
+.errorPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 200px 0;
+  color: #7e3030;
+  h1 {
+    font-size: 42px;
+  }
+}
