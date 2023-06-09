@@ -16,7 +16,6 @@ const Index = () => {
   const [board, setBoard] = useState(Array(ROW_SIZE * COL_SIZE).fill(-1))
   const [posY, setPosY] = useState(-3)
   const [posX, setPosX] = useState(ROW_SIZE / 2)
-  let posXtemp = posX
   const positionDebounce = useDebounce(posY, 500)
   const [shapeNum, setShapeNum] = useState(getRandomShape())
 
@@ -51,24 +50,26 @@ const Index = () => {
       return prevState + 1
     })
   }
+
   const shiftSides = (isRight: boolean) => {
-    const curShape = getShape(shapeNum, 0, posX, posY)
-    const {deltaX, func, isEdge} = isRight
-      ? {
-          deltaX: 1,
-          func: (edgeVal: number[]) => Math.max.apply(null, edgeVal),
-          isEdge: posXtemp + curShape[0].length === ROW_SIZE,
-        }
-      : {
-          deltaX: -1,
-          func: (edgeVal: number[]) => Math.min.apply(null, edgeVal),
-          isEdge: posXtemp === 0,
-        }
-    // Making sure we are not going off the edge
-    if (isEdge) return
-    posXtemp += deltaX
-    setPosX((prevState) => prevState + deltaX)
+    setPosX((prevState) => {
+      const curShape = getShape(shapeNum, 0, prevState, posY)
+      const {deltaX, func, isEdge} = isRight
+        ? {
+            deltaX: 1,
+            func: (edgeVal: number[]) => Math.max.apply(null, edgeVal),
+            isEdge: prevState + curShape[0].length === ROW_SIZE,
+          }
+        : {
+            deltaX: -1,
+            func: (edgeVal: number[]) => Math.min.apply(null, edgeVal),
+            isEdge: prevState === 0,
+          }
+      if (isEdge) return prevState
+      return prevState + deltaX
+    })
   }
+
   useKeyPress(() => console.log('q'), ['KeyQ'])
   useKeyPress(() => console.log('e'), ['KeyE'])
   useKeyPress(() => shiftSides(false), ['KeyA'])
