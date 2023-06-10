@@ -138,3 +138,15 @@ export const getShape = (
 
 export const getRandomShape = () =>
   Math.round((SHAPE.length - 1) * Math.random())
+
+export const rotateShape = (
+  isClockwise: boolean,
+  {shapePos, rotatePos}: {shapePos: number; rotatePos: number},
+) =>
+  isClockwise
+    ? rotatePos === 0
+      ? SHAPE[shapePos].length - 1
+      : rotatePos - 1
+    : rotatePos === SHAPE[shapePos].length - 1
+    ? 0
+    : rotatePos + 1
