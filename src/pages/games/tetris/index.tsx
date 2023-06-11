@@ -1,163 +1,177 @@
 import cn from './style.module.scss'
-import {useEffect, useState} from 'react'
-import {COL_SIZE, COLOR_MAP, getRandomShape, getShape, ROW_SIZE} from './utils'
-import {useKeyPress} from '../../../hooks/useKeyPress'
+import {COLOR_MAP, shapes} from './utils'
+import {useSelector, useDispatch} from 'react-redux'
+import {
+  moveDown,
+  moveLeft,
+  moveRight,
+  restart,
+  resume,
+  pause,
+  rotate,
+} from '../../../store/actions/tetrisActions'
+import {useEffect, useRef} from 'react'
 
-const Square = ({color, name}: {color: number; name: number}) => {
+type squareProps = {
+  color: number
+}
+
+const Square = ({color}: squareProps) => (
+  <div className={cn.square} style={{backgroundColor: COLOR_MAP[color]}} />
+)
+
+const NextBlock = () => {
+  const nextShape = useSelector((state) => state.tetris.nextShape)
+  const box = shapes[nextShape][0]
+  const grid = box.map((rowArray, row) => {
+    return rowArray.map((square, col) => {
+      return <Square key={`${row}${col}`} color={square} />
+    })
+  })
+  return <div className={cn.nextBlock}>{grid}</div>
+}
+
+const ScoreBoard = () => {
+  const dispatch = useDispatch()
+  const game = useSelector((state) => state.tetris)
+  const {score, isRunning, gameOver} = game
+
   return (
-    <div className={cn.row} style={{backgroundColor: COLOR_MAP[color]}}>
-      {name}
+    <div className={cn.scoreBoard}>
+      <div>Score:{score}</div>
+      <div>Level: 1</div>
+      <button
+        className={cn.scoreBoardButton}
+        onClick={() => {
+          if (gameOver) {
+            return
+          }
+          if (isRunning) {
+            dispatch(pause())
+          } else {
+            dispatch(resume())
+          }
+        }}>
+        {isRunning ? 'Pause' : 'Play'}
+      </button>
+      <button
+        className={cn.scoreBoardButton}
+        onClick={() => dispatch(restart())}>
+        Restart
+      </button>
+    </div>
+  )
+}
+
+const Controls = () => {
+  const dispatch = useDispatch()
+  const isRunning = useSelector((state: any) => state.tetris.isRunning)
+  const gameOver = useSelector((state: any) => state.tetris.gameOver)
+  return (
+    <div className={cn.controls}>
+      <button
+        disabled={!isRunning || gameOver}
+        className={cn.controlsButton}
+        onClick={() => dispatch(moveLeft())}>
+        Left
+      </button>
+      <button
+        disabled={!isRunning || gameOver}
+        className={cn.controlsButton}
+        onClick={() => dispatch(moveRight())}>
+        Right
+      </button>
+      <button
+        disabled={!isRunning || gameOver}
+        className={cn.controlsButton}
+        onClick={() => dispatch(rotate())}>
+        Rotate
+      </button>
+      <button
+        disabled={!isRunning || gameOver}
+        className={cn.controlsButton}
+        onClick={() => dispatch(moveDown())}>
+        Down
+      </button>
+    </div>
+  )
+}
+
+const MessagePopup = ({hidden}: {hidden: boolean}) => {
+  return (
+    <div className={`${cn.messagePopup} ${!hidden && cn.hidden}`}>
+      <h1>Message Title</h1>
+      <p>Message info...</p>
     </div>
   )
 }
 
 const Index = () => {
-  const [board, setBoard] = useState<Array<number>>(
-    Array(ROW_SIZE * COL_SIZE).fill(-1),
-  )
-  const [position, setPosition] = useState(() => ({x: ROW_SIZE / 2, y: -3}))
-  const [shapeNum, setShapeNum] = useState(getRandomShape())
+  const requestRef = useRef()
+  const lastUpdateTimeRef = useRef(0)
+  const progressTimeRef = useRef(0)
+  const dispatch = useDispatch()
+  const game = useSelector((state: any) => state.tetris)
+  const {grid, shape, rotation, x, y, isRunning, speed, gameOver} = game
 
-  const updateBoard = (shapePos: number) => {
-    setBoard((prevState) => {
-      const res = [...prevState]
-      const shape = getShape(shapeNum, 0, position.x, position.y)
-      shape.forEach((row) => {
-        row.forEach((pos) => {
-          if (pos !== -1) {
-            res[pos] = shapePos
-          }
-        })
-      })
-      return res
-    })
-  }
-
-  const newShape = () => {
-    // const shape = getShape(shapeNum, 0, position.x, position.y)
-    // for (let i = 0; i < shape.length; i++) {
-    //   const row = [...Array(ROW_SIZE)].map(
-    //     (_, pos) => pos + ROW_SIZE * (position.y + i),
-    //   )
-    //
-    //   const isFilled =
-    //     row.map((pos) => board[pos]).filter((val) => val !== -1).length ===
-    //     ROW_SIZE
-    //   if (isFilled) {
-    //     setBoard((prevState) => {
-    //       const board = [...prevState]
-    //       row.forEach((pos) => (board[pos] = -1))
-    //       for (let j = row[0]; j > 0; j--) {
-    //         if (board[j] !== -1) {
-    //           board[j + ROW_SIZE] = board[j]
-    //           board[j] = -1
-    //         }
-    //       }
-    //       return board
-    //     })
-    //   }
-    // }
-    setShapeNum(getRandomShape())
-    setPosition(() => ({
-      x: ROW_SIZE / 2,
-      y: -3,
-    }))
-  }
-
-  const shiftDown = () => {
-    setPosition((prevState) => ({...prevState, y: prevState.y + 1}))
-  }
-
-  const shiftSides = (isRight: boolean) => {
-    setPosition((prevState) => {
-      const curShape = getShape(shapeNum, 0, prevState.x, prevState.y)
-      const {deltaX, func, isEdge} = isRight
-        ? {
-            deltaX: 1,
-            func: (edgeVal: number[]) => Math.max(...edgeVal),
-            isEdge: prevState.x + curShape[0].length === ROW_SIZE,
-          }
-        : {
-            deltaX: -1,
-            func: (edgeVal: number[]) => Math.min(...edgeVal),
-            isEdge: prevState.x === 0,
-          }
-      if (isEdge) {
-        console.log('isEdge')
-        return prevState
+  const block = shapes[shape][rotation]
+  const blockColor = shape
+  // map rows
+  const gridSquares = grid.map((rowArray: Array<number>, row: number) => {
+    // map columns
+    return rowArray.map((square, col) => {
+      // Find the block x and y on the shape grid
+      // By subtracting the x and y from the col and the row we get the position of the upper left corner of the block array as if it was superimposed over the main grid
+      const blockX = col - x
+      const blockY = row - y
+      let color = square
+      // Map current falling block to grid.
+      // For any squares that fall on the grid we need to look at the block array and see if there is a 1 in this case we use the block color.
+      if (
+        blockX >= 0 &&
+        blockX < block.length &&
+        blockY >= 0 &&
+        blockY < block.length
+      ) {
+        color = block[blockY][blockX] === 0 ? color : blockColor
       }
-
-      let isConflict = false
-
-      curShape.forEach((oldArray) => {
-        // Removing elemnts that are not part of block
-        const newArray = oldArray.filter((val) => val !== -1)
-        // checking the edge most value after we shift
-        const edgeValue = func(newArray) + deltaX
-        // checking that there is no conflict
-        if (board[edgeValue] !== -1) {
-          isConflict = true
-        }
-      })
-      if (!isConflict) {
-        console.log(deltaX)
-        return {
-          ...prevState,
-          x: prevState.x + deltaX,
-        }
-      }
-
-      return prevState
+      // Generate a unique key for every block
+      const k = row * grid[0].length + col
+      // Generate a grid square
+      return <Square key={k} color={color} />
     })
-  }
+  })
 
-  // useEffect(() => {
-  //   const int = setInterval(() => {
-  //     shiftDown()
-  //   }, 500)
-  //   return () => {
-  //     clearInterval(int)
-  //   }
-  // }, [position])
-
-  useEffect(() => {
-    updateBoard(shapeNum)
-    const shape = getShape(shapeNum, 0, position.x, position.y)
-    if (position.y + shape.length >= COL_SIZE) {
-      newShape()
+  const update = (time) => {
+    requestRef.current = requestAnimationFrame(update)
+    if (!isRunning) {
       return
-    } else {
-      for (let i = 0; i < shape[0].length; i++) {
-        const newArray = shape.map((row) =>
-          row[i] === -1 ? -1 : row[i] + ROW_SIZE,
-        )
-        const bottomValue = Math.max(...newArray)
-        if (board[bottomValue] !== undefined && board[bottomValue] !== -1) {
-          if (position.y <= 0 && position.y !== -3) {
-            // newShape()
-            // alert('Game Over')
-          } else newShape()
-          return
-        }
-      }
     }
-    return () => {
-      updateBoard(-1)
+    if (!lastUpdateTimeRef.current) {
+      lastUpdateTimeRef.current = time
     }
-  }, [position])
-
-  useKeyPress(() => shiftSides(false), ['KeyA'])
-  useKeyPress(() => shiftSides(true), ['KeyD'])
-  useKeyPress(shiftDown, ['KeyS'])
+    const deltaTime = time - lastUpdateTimeRef.current
+    progressTimeRef.current += deltaTime
+    if (progressTimeRef.current > speed) {
+      dispatch(moveDown())
+      progressTimeRef.current = 0
+    }
+    lastUpdateTimeRef.current = time
+  }
+  useEffect(() => {
+    requestRef.current = requestAnimationFrame(update)
+    return () => cancelAnimationFrame(requestRef.current)
+  }, [isRunning])
 
   return (
     <div className={cn.game}>
-      X:{position.x} Y:{position.y}
-      <div className={cn.board}>
-        {board.map((el, idx) => (
-          <Square key={idx} color={el} name={idx} />
-        ))}
+      <NextBlock />
+      <div>
+        <div className={cn.board}>{gridSquares}</div>
+        <Controls />
       </div>
+      <ScoreBoard />
+      <MessagePopup hidden={gameOver || !isRunning} />
     </div>
   )
 }
