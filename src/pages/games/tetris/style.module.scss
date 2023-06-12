@@ -17,7 +17,7 @@
   --tile-size: 20px for example will set size of the grid squares. */
   --cols: 10;
   --rows: 18;
-  --tile-size: 20px;
+  --tile-size: 30px;
   --border-width: 5px;
   margin: 0 auto;
   display: flex;
@@ -47,32 +47,11 @@
     display: flex;
     flex-direction: column;
     gap: 1em;
-    &Button {
-      display: block;
-      padding: 1em;
-      border-width: 5px;
-      border-top-color: var(--button-color-t);
-      border-left-color: var(--button-color-l);
-      border-right-color: var(--button-color-r);
-      border-bottom-color: var(--button-color-b);
-    }
   }
   .controls {
     display: flex;
     justify-content: space-between;
     margin-top: 1em;
-    &Button {
-      --size: calc(var(--tile-size) * 2.5);
-      width: var(--size);
-      height: var(--size);
-      text-align: center;
-      display: block;
-      border-width: 5px;
-      border-top-color: var(--button-color-t);
-      border-left-color: var(--button-color-l);
-      border-right-color: var(--button-color-r);
-      border-bottom-color: var(--button-color-b);
-    }
   }
   .messagePopup {
     position: absolute;

@@ -1,4 +1,12 @@
 import {
+  addBlockToGrid,
+  canMoveTo,
+  checkRows,
+  gridDefault,
+  nextRotation,
+  randomShape,
+} from '../actions/tetrisActions'
+import {
   GAME_OVER,
   MOVE_DOWN,
   MOVE_LEFT,
@@ -7,41 +15,24 @@ import {
   RESTART,
   RESUME,
   ROTATE,
-} from './actions/tetrisActions'
-import {
-  addBlockToGrid,
-  canMoveTo,
-  checkRows,
-  gridDefault,
-  nextRotation,
-  randomShape,
-} from '../pages/games/tetris/utils'
+} from '../constants/tetris'
 
 const defaultState = () => {
   return {
-    // Create an empty grid
     grid: gridDefault(),
-    // Get a new random shape
     shape: randomShape(),
-    // set rotation of the shape to 0
     rotation: 0,
-    // set the 'x' position of the shape to 5 and y to -4, which puts the shape in the center of the grid, above the top
     x: 5,
     y: -4,
-    // set the index of the next shape to a new random shape
     nextShape: randomShape(),
-    // Tell the game that it's currently running
     isRunning: true,
-    // Set the score to 0
     score: 0,
-    // Set the default speed
     speed: 1000,
-    // Game isn't over yet
     gameOver: false,
   }
 }
 
-const tetrisReducer = (state = defaultState(), action) => {
+const tetris = (state = defaultState(), action: any) => {
   switch (action.type) {
     case ROTATE: {
       const newRotation = nextRotation(state.shape, state.rotation)
@@ -54,9 +45,8 @@ const tetrisReducer = (state = defaultState(), action) => {
     case MOVE_RIGHT: {
       if (
         canMoveTo(state.shape, state.grid, state.x + 1, state.y, state.rotation)
-      ) {
+      )
         return {...state, x: state.x + 1}
-      }
       return state
     }
 
@@ -138,4 +128,4 @@ const tetrisReducer = (state = defaultState(), action) => {
   }
 }
 
-export default tetrisReducer
+export default tetris

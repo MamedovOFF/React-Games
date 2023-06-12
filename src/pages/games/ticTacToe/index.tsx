@@ -2,7 +2,7 @@ import cn from './style.module.scss'
 import {useState} from 'react'
 import {calculateWinner, isFull} from './util'
 
-interface Square {
+type Square = {
   value: string | null
   onClick: () => void
 }
