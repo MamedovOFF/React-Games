@@ -13,7 +13,7 @@ import {
   Paper,
 } from '@mui/material'
 import {useState} from 'react'
-import {Games, GitHub, Home, Info} from '@mui/icons-material'
+import {Games, GitHub, Home, Info, PlaylistAddCheck} from '@mui/icons-material'
 import {NavLink} from 'react-router-dom'
 
 const Index = () => {
@@ -54,6 +54,14 @@ const Index = () => {
                     <Games fontSize="small" />
                   </ListItemIcon>
                   <ListItemText>Games</ListItemText>
+                </MenuItem>
+              </NavLink>
+              <NavLink to="/todos">
+                <MenuItem>
+                  <ListItemIcon>
+                    <PlaylistAddCheck fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Todos</ListItemText>
                 </MenuItem>
               </NavLink>
               <NavLink to="/about">

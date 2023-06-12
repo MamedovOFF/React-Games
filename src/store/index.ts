@@ -1,9 +1,11 @@
 import {configureStore} from '@reduxjs/toolkit'
 import tetrisReducer from './tetrisSlice'
+import todoReducer from './todoSlice'
 
 export const store = configureStore({
   reducer: {
     tetris: tetrisReducer,
+    todo: todoReducer,
   },
 })
 

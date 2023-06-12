@@ -5,6 +5,9 @@ import TicTacToe from '../pages/games/ticTacToe'
 import GamesTable from '../components/gamesTable'
 import ErrorPage from '../pages/errorPage'
 import Tetris from '../pages/games/tetris'
+import Todos from '../pages/todos'
+import TodoList from '../pages/todos/components/TodoList'
+import CreateTodo from '../pages/todos/components/CreateTodo'
 
 const router = createBrowserRouter([
   {
@@ -27,6 +30,20 @@ const router = createBrowserRouter([
           {
             path: 'tetris',
             element: <Tetris />,
+          },
+        ],
+      },
+      {
+        path: '/todos',
+        element: <Todos />,
+        children: [
+          {
+            path: '',
+            element: <TodoList />,
+          },
+          {
+            path: 'create-todo',
+            element: <CreateTodo />,
           },
         ],
       },
