@@ -60,17 +60,11 @@ const tetris = (state = defaultState(), action: any) => {
     }
 
     case MOVE_DOWN: {
-      // Get the next potential Y position
       const maybeY = state.y + 1
 
-      // Check if the current block can move here
-      if (canMoveTo(state.shape, state.grid, state.x, maybeY, state.rotation)) {
-        // If so move down don't place the block
+      if (canMoveTo(state.shape, state.grid, state.x, maybeY, state.rotation))
         return {...state, y: maybeY}
-      }
 
-      // If not place the block
-      // (this returns an object with a grid and gameover bool)
       const obj = addBlockToGrid(
         state.shape,
         state.grid,
@@ -78,30 +72,22 @@ const tetris = (state = defaultState(), action: any) => {
         state.y,
         state.rotation,
       )
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       const newGrid = obj.grid
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       const gameOver = obj.gameOver
 
       if (gameOver) {
-        // Game Over
         const newState = {...state}
         newState.shape = 0
         newState.grid = newGrid
         return {...state, gameOver: true}
       }
 
-      // reset somethings to start a new shape/block
       const newState = defaultState()
       newState.grid = newGrid
       newState.shape = state.nextShape
       newState.score = state.score
       newState.isRunning = state.isRunning
 
-      // TODO: Check and Set level
-      // Score increases decrease interval
       newState.score = state.score + checkRows(newGrid)
 
       return newState

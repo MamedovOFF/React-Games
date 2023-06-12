@@ -60,22 +60,13 @@ export const canMoveTo = (
   rotation: number,
 ) => {
   const currentShape = shapes[shape][rotation]
-  // Loop through all rows and cols of the **shape**
-  for (let row = 0; row < currentShape.length; row++) {
+  for (let row = 0; row < currentShape.length; row++)
     for (let col = 0; col < currentShape[row].length; col++) {
-      // Look for a 1 here
       if (currentShape[row][col] !== 0) {
-        // x offset on grid
         const proposedX = col + x
-        // y offset on grid
         const proposedY = row + y
-        if (proposedY < 0) {
-          console.log('asd')
-          continue
-        }
-        // Get the row on the grid
+        if (proposedY < 0) continue
         const possibleRow = grid[proposedY]
-        // Check row exists
         if (possibleRow) {
           if (
             possibleRow[proposedX] === undefined ||
@@ -85,7 +76,6 @@ export const canMoveTo = (
         } else return false
       }
     }
-  }
   return true
 }
 
