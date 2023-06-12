@@ -1,7 +1,7 @@
 import {useDispatch} from 'react-redux'
 import cn from '../style.module.scss'
-import {pause, restart, resume} from '../../../../store/actions/tetrisActions'
 import {Button} from '@mui/material'
+import {pause, restart, resume} from '../../../../store/tetrisSlice'
 
 type scoreBoardProps = {
   score: number

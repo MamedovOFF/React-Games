@@ -1,42 +1,5 @@
 import {shapes} from '../../pages/games/tetris/utils'
 import {random} from '../../util/Random'
-import {
-  MOVE_DOWN,
-  MOVE_LEFT,
-  MOVE_RIGHT,
-  PAUSE,
-  RESTART,
-  RESUME,
-  ROTATE,
-} from '../constants/tetris'
-
-export const moveRight = () => {
-  return {type: MOVE_RIGHT}
-}
-
-export const moveLeft = () => {
-  return {type: MOVE_LEFT}
-}
-
-export const rotate = () => {
-  return {type: ROTATE}
-}
-
-export const moveDown = () => {
-  return {type: MOVE_DOWN}
-}
-
-export const pause = () => {
-  return {type: PAUSE}
-}
-
-export const resume = () => {
-  return {type: RESUME}
-}
-
-export const restart = () => {
-  return {type: RESTART}
-}
 
 export const gridDefault = () => {
   return Array(18)

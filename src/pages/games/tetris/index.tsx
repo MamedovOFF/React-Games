@@ -1,11 +1,6 @@
 import cn from './style.module.scss'
 import {useSelector, useDispatch} from 'react-redux'
-import {
-  moveDown,
-  moveLeft,
-  moveRight,
-  rotate,
-} from '../../../store/actions/tetrisActions'
+import {moveDown, moveLeft, moveRight, rotate} from '../../../store/tetrisSlice'
 import {MutableRefObject, useEffect, useRef} from 'react'
 import MessagePopup from './components/MessagePopup'
 import ScoreBoard from './components/ScoreBoard'

@@ -25,12 +25,9 @@ const Board = ({shape, rotation, grid, x, y}: boardProps) => {
             blockX < block.length &&
             blockY >= 0 &&
             blockY < block.length
-          ) {
+          )
             color = block[blockY][blockX] === 0 ? color : blockColor
-          }
-          // Generate a unique key for every block
           const k = row * grid[0].length + col
-          // Generate a grid square
           return <Square key={k} color={color} />
         })
       })}
