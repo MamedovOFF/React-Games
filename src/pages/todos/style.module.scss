@@ -23,5 +23,25 @@
     padding: 20px;
     background-color: #fff;
     border-radius: 1em;
+    display: flex;
+    justify-content: space-between;
+    .textContent {
+      display: flex;
+      gap: 1em;
+      flex-direction: column;
+      .title {
+        display: flex;
+        align-items: center;
+        gap: 1em;
+      }
+    }
+    .body {
+      display: flex;
+      gap: 1em;
+      align-items: center;
+    }
+    .action {
+      display: flex;
+    }
   }
 }

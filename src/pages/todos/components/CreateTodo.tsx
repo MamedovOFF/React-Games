@@ -18,6 +18,7 @@ const CreateTodo = () => {
         title,
         body,
         id,
+        done: false,
       }),
     )
     navigate('/todos')

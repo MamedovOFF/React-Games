@@ -1,6 +1,7 @@
 import cn from '../style.module.scss'
 import Square from './Square'
 import {shapes} from '../utils'
+import MessagePopup from './MessagePopup'
 
 type boardProps = {
   shape: number
@@ -31,6 +32,7 @@ const Board = ({shape, rotation, grid, x, y}: boardProps) => {
           return <Square key={k} color={color} />
         })
       })}
+      <MessagePopup />
     </div>
   )
 }

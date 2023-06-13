@@ -25,64 +25,103 @@ const initialState = () => {
 
 const tetrisSlice = createSlice({
   name: 'tetris',
-  initialState,
+  initialState: {
+    tetris: initialState(),
+  },
   reducers: {
     rotate(state) {
-      const newRotation = nextRotation(state.shape, state.rotation)
-      if (canMoveTo(state.shape, state.grid, state.x, state.y, newRotation)) {
-        state.rotation = newRotation
+      const newRotation = nextRotation(
+        state.tetris.shape,
+        state.tetris.rotation,
+      )
+      if (
+        canMoveTo(
+          state.tetris.shape,
+          state.tetris.grid,
+          state.tetris.x,
+          state.tetris.y,
+          newRotation,
+        )
+      ) {
+        state.tetris.rotation = newRotation
       }
     },
     moveRight(state) {
-      if (
-        canMoveTo(state.shape, state.grid, state.x + 1, state.y, state.rotation)
-      )
-        state.x++
+      if (state.tetris.y > -2) {
+        if (
+          canMoveTo(
+            state.tetris.shape,
+            state.tetris.grid,
+            state.tetris.x + 1,
+            state.tetris.y,
+            state.tetris.rotation,
+          )
+        )
+          state.tetris.x++
+      }
     },
     moveLeft(state) {
-      if (
-        canMoveTo(state.shape, state.grid, state.x - 1, state.y, state.rotation)
-      )
-        state.x--
+      if (state.tetris.y > -2) {
+        if (
+          canMoveTo(
+            state.tetris.shape,
+            state.tetris.grid,
+            state.tetris.x - 1,
+            state.tetris.y,
+            state.tetris.rotation,
+          )
+        )
+          state.tetris.x--
+      }
     },
     moveDown(state) {
-      const maybeY = state.y + 1
+      const maybeY = state.tetris.y + 1
 
-      if (canMoveTo(state.shape, state.grid, state.x, maybeY, state.rotation))
-        return {...state, y: maybeY}
+      if (
+        canMoveTo(
+          state.tetris.shape,
+          state.tetris.grid,
+          state.tetris.x,
+          maybeY,
+          state.tetris.rotation,
+        )
+      ) {
+        state.tetris.y = maybeY
+        return
+      }
 
       const obj = addBlockToGrid(
-        state.shape,
-        state.grid,
-        state.x,
-        state.y,
-        state.rotation,
+        state.tetris.shape,
+        state.tetris.grid,
+        state.tetris.x,
+        state.tetris.y,
+        state.tetris.rotation,
       )
       const newGrid = obj.grid
       const gameOver = obj.gameOver
 
       if (gameOver) {
-        return {...state, gameOver: true}
+        state.tetris.gameOver = true
+        return
       }
 
       const newState = initialState()
-      state.grid = newGrid
-      state.shape = state.nextShape
-      state.rotation = newState.rotation
-      state.x = newState.x
-      state.y = newState.y
-      state.nextShape = newState.nextShape
-      state.isRunning = newState.isRunning
-      state.score += checkRows(newGrid)
-      state.speed = newState.speed
+      newState.grid = newGrid
+      newState.shape = state.tetris.nextShape
+      newState.score = state.tetris.score
+      newState.isRunning = state.tetris.isRunning
+      newState.score = state.tetris.score + checkRows(newGrid)
+      state.tetris = newState
     },
     resume(state) {
-      if (!state.isRunning) state.isRunning = true
+      if (!state.tetris.isRunning) state.tetris.isRunning = true
     },
     pause(state) {
-      if (state.isRunning) state.isRunning = false
+      if (state.tetris.isRunning) state.tetris.isRunning = false
     },
-    restart: initialState,
+    restart(state) {
+      state.tetris = initialState()
+    },
   },
 })
 

@@ -2,12 +2,12 @@ import cn from './style.module.scss'
 import {useSelector, useDispatch} from 'react-redux'
 import {moveDown, moveLeft, moveRight, rotate} from '../../../store/tetrisSlice'
 import {MutableRefObject, useEffect, useRef} from 'react'
-import MessagePopup from './components/MessagePopup'
 import ScoreBoard from './components/ScoreBoard'
 import {useKeyPress} from '../../../hooks/useKeyPress'
 import NextBlock from './components/NextBlock'
 import Board from './components/Board'
 import {RootState} from '../../../store'
+import {useGetTodosQuery} from '../../../store/services/todos'
 
 const Index = () => {
   const requestRef: MutableRefObject<
@@ -16,7 +16,8 @@ const Index = () => {
   const lastUpdateTimeRef = useRef(0)
   const progressTimeRef = useRef(0)
   const dispatch = useDispatch()
-  const game = useSelector((state: RootState) => state.tetris)
+  const game = useSelector((state: RootState) => state.tetris.tetris)
+  const {data} = useGetTodosQuery('as')
   const {
     grid,
     shape,
@@ -78,13 +79,12 @@ const Index = () => {
       dispatch(rotate())
     }
   }, ['KeyZ'])
-
+  console.log(data)
   return (
     <div className={cn.game}>
       <NextBlock nextShape={nextShape} />
       <Board grid={grid} y={y} shape={shape} rotation={rotation} x={x} />
       <ScoreBoard score={score} isRunning={isRunning} gameOver={gameOver} />
-      <MessagePopup hidden={gameOver || !isRunning} />
     </div>
   )
 }
