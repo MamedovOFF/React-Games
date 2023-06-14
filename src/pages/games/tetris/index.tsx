@@ -7,7 +7,6 @@ import {useKeyPress} from '../../../hooks/useKeyPress'
 import NextBlock from './components/NextBlock'
 import Board from './components/Board'
 import {RootState} from '../../../store'
-import {useGetTodosQuery} from '../../../store/services/todos'
 
 const Index = () => {
   const requestRef: MutableRefObject<
@@ -17,7 +16,6 @@ const Index = () => {
   const progressTimeRef = useRef(0)
   const dispatch = useDispatch()
   const game = useSelector((state: RootState) => state.tetris.tetris)
-  const {data} = useGetTodosQuery('as')
   const {
     grid,
     shape,
@@ -79,7 +77,6 @@ const Index = () => {
       dispatch(rotate())
     }
   }, ['KeyZ'])
-  console.log(data)
   return (
     <div className={cn.game}>
       <NextBlock nextShape={nextShape} />
