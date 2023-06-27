@@ -5,7 +5,7 @@ const Index = () => {
   const error: unknown = useRouteError()
   return (
     <div className={cn.errorPage}>
-      <h1>Oops!</h1>
+      <h1>Oops!!!s!</h1>
       <p>Sorry, an unexpected error has occurred.</p>
       <p>
         <i>
